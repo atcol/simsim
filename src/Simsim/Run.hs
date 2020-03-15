@@ -16,15 +16,6 @@ import           Prelude         (print)
 import           RIO.Process
 import           System.Random   (StdGen, getStdGen, newStdGen, setStdGen)
 
-data Vehicle
-  = Car
-      { carName :: Text
-      }
-  | Motorcycle
-      { mcName :: Text
-      }
-  deriving (Eq, Read, Show)
-
 instance ParseRecord Options
 
 -- | Run the simulation until it terminates
@@ -44,8 +35,7 @@ run :: (Show a) => [(Actor IO a, ActorState a)] -> RIO Simulation [ActorState a]
 run pairs = do
   si@(Simulation _ _ opts stats) <- ask
   logInfo $ "Starting simulation " <> displayShow si
-  g <-
-    case seed opts >>= readMaybe of
+  g <- case seed opts >>= readMaybe of
       Just s -> liftIO $ setStdGen s >> getStdGen
       _ -> liftIO newStdGen
   logInfo $ "Seed is " <> displayShow g
