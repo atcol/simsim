@@ -8,12 +8,10 @@ module VehicleExampleSpec
   ( spec
   ) where
 
+import           RIO.List      (foldl)
 import           Simsim.Import
-import           Prelude       (print)
 import           Simsim.Run
-import           System.Random (StdGen, randomR)
 import           Test.Hspec
-import RIO.List (foldl)
 
 data Mode
   = Moving
@@ -41,9 +39,9 @@ vehicleActor = do
     Moving ->
       let startParking = count >= 10 || speed == maxSpeed
           newSpeed
-               | startParking = 10 
-               | speed < maxSpeed = speed + ((maxSpeed - speed) / 2)
-               | otherwise = maxSpeed
+            | startParking = 10
+            | speed < maxSpeed = speed + ((maxSpeed - speed) / 2)
+            | otherwise = maxSpeed
           mode =
             if startParking
               then Parking
@@ -52,10 +50,15 @@ vehicleActor = do
 
 spec :: Spec
 spec =
-  describe "Vehicle Example" $
-  it "Demonstrates a simple Vehicle simulation" $ do
+  describe "Vehicle Example" $ it "Demonstrates a simple Vehicle simulation" $ do
     let c1 = Car "Volvo" 50 Parked
     results <- runSim [(vehicleActor, c1)]
-    let values = map astValue results
+    let values = foldl (\a (_, x) -> a ++ map astValue x) [] results
     values `shouldNotBe` []
-    values `shouldSatisfy` (==) 0 . foldl (\n (Car _ speed _) -> if speed > maxSpeed then n + 1 else n) (0 :: Int)
+    values `shouldSatisfy` (==) 0 .
+      foldl
+        (\n (Car _ speed _) ->
+           if speed > maxSpeed
+             then n + 1
+             else n)
+        (0 :: Int)

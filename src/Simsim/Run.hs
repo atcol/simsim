@@ -10,45 +10,49 @@ module Simsim.Run
   , runSim
   ) where
 
-import           Simsim.Import
 import           Options.Generic (ParseRecord, getRecord)
 import           Prelude         (print)
 import           RIO.Process
+import           Simsim.Import
 import           System.Random   (StdGen, getStdGen, newStdGen, setStdGen)
 
 instance ParseRecord Options
 
 -- | Run the simulation until it terminates
-runActor :: (MonadIO m, Show a) => Actor m a -> (StdGen, ActorState a) -> m (StdGen, ActorState a)
-runActor r v = do
-  (s, g', v') <- runReaderT r v
-  let st = simStats $ astSim v'
-  (SimulationStats n) <- takeMVar st
-  putMVar st (SimulationStats (n + 1))
-  liftIO $ print $ "New state: " ++ show v'
-  case s of
-    Terminate -> return (g', v')
-    _         -> runActor r (g', v')
+runActor :: (MonadIO m, Show a) => Actor m a -> (StdGen, ActorState a) -> m (Actor m a, StdGen, [ActorState a])
+runActor = loop []
+  where
+    loop x r v = do
+      (s, g', v') <- runReaderT r v
+      let st = simStats $ astSim v'
+      (SimulationStats n) <- takeMVar st
+      putMVar st (SimulationStats (n + 1))
+      liftIO $ print $ "New state: " ++ show v'
+      case s of
+        Terminate -> return (r, g', x ++ [v'])
+        _         -> loop (x ++ [v']) r (g', v')
 
 -- | Wrap @runActor@ with statistics gathering and logging
-run :: (Show a) => [(Actor IO a, ActorState a)] -> RIO Simulation [ActorState a]
+run :: (Show a) => [(Actor IO a, ActorState a)] -> RIO Simulation [(Actor IO a, [ActorState a])]
 run pairs = do
   si@(Simulation _ _ opts stats) <- ask
   logInfo $ "Starting simulation " <> displayShow si
-  g <- case seed opts >>= readMaybe of
+  g <-
+    case seed opts >>= readMaybe of
       Just s -> liftIO $ setStdGen s >> getStdGen
-      _ -> liftIO newStdGen
+      _      -> liftIO newStdGen
   logInfo $ "Seed is " <> displayShow g
   res <- liftIO $ mapConcurrently (doStep g) pairs
-  logInfo $ "Simulation complete: " <> displayShow res
   simSt <- takeMVar stats
   logInfo $ "Simulation stats: " <> displayShow simSt
-  return $ map snd res
+  return res
   where
-    doStep g (act, v) = liftIO $ runActor act (g, v)
+    doStep g (act, v) = do
+      (_, _, vals) <- liftIO $ runActor act (g, v)
+      return (act, vals)
 
--- | Entrypoint for running a simulation from a set of @Actor@s and their initial state
-runSim :: (Show a) => [(Actor IO a, a)] -> IO [ActorState a] 
+-- | Entry-point for running a simulation from a set of @Actor@s and their initial state
+runSim :: (Show a) => [(Actor IO a, a)] -> IO [(Actor IO a, [ActorState a])]
 runSim x = do
   opts <- getRecord "Simsim :)" :: IO Options
   lo <- logOptionsHandle stderr (verbose opts)
