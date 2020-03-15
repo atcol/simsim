@@ -29,7 +29,7 @@ A very simple example is as follows:
 incrementor :: Actor IO Int
 incrementor = do
   (g, s@(ActorSimState i sim)) <- ask
-  return (Continue, g, s { actValue i + 1 })
+  return (Continue, g, s { astValue = i + 1 })
 ```
 
 where `Actor` is a `ReaderT` in the `IO` monad that operates on `Int`s. The 
