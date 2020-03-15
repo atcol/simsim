@@ -1,8 +1,8 @@
 {-# LANGUAGE NoImplicitPrelude #-}
-module Import
+module Simsim.Import
   ( module RIO
-  , module Types
+  , module Simsim.Types
   ) where
 
 import RIO
-import Types
+import Simsim.Types

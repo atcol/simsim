@@ -7,8 +7,8 @@ maintainer:          example@example.com
 copyright:           2020 Author name here
 
 extra-source-files:
-- README.md
-- ChangeLog.md
+  - README.md
+  - ChangeLog.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -20,46 +20,35 @@ extra-source-files:
 description:         Please see the README on Github at <https://github.com/githubuser/simsim#readme>
 
 dependencies:
-- base >= 4.11 && < 10
-- rio >= 0.1.12.0
+  - base >= 4.11 && < 10
+  - rio >= 0.1.12.0
 
 ghc-options:
-- -Wall
-- -Wcompat
-- -Widentities
-- -Wincomplete-record-updates
-- -Wincomplete-uni-patterns
-- -Wpartial-fields
-- -Wredundant-constraints
+  - -Wall
+  - -Wcompat
+  - -Widentities
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wpartial-fields
+  - -Wredundant-constraints
 
 library:
   source-dirs: src
-  dependencies:
-  - random
 
-executables:
-  simsim-exe:
-    main:                Main.hs
-    source-dirs:         app
-    dependencies:
-    - simsim
+  dependencies:
     - optparse-generic
     - random
-
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
 
 tests:
   simsim-test:
     main:                Spec.hs
     source-dirs:         test
     dependencies:
-    - simsim
-    - hspec
+      - simsim
+      - hspec
+      - random
 
     ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
