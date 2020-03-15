@@ -17,7 +17,8 @@ Simsim aims to provide a comprehensive API for simulation that is:
 
 ### Core Types
 
-The basic `Actor m a` type provides the interface for a simple unit of behaviour in a simulation.
+The basic `Actor m a` type provides the interface for a simple unit of behaviour that mutates state to participate 
+in a simulation.
 
 That is, an `Actor` is to take its last (or initial) state, mutate it according to its behavioural
 traits, and then return the new state along with a status of `Continue` or `Terminate`.
