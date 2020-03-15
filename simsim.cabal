@@ -4,26 +4,25 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 735c952790216f3372d60002ac41966345254f3a9793377877806335b7520502
+-- hash: 55d5d83ff489b8a74379640cff3999db787456c51326dead530e1e2eac393bf7
 
 name:           simsim
 version:        0.1.0.0
-description:    Please see the README on Github at <https://github.com/githubuser/simsim#readme>
-homepage:       https://github.com/githubuser/simsim#readme
-bug-reports:    https://github.com/githubuser/simsim/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2020 Author name here
+description:    Please see the README on Github at <https://github.com/atcol/simsim#readme>
+homepage:       https://github.com/atcol/simsim#readme
+bug-reports:    https://github.com/atcol/simsim/issues
+author:         Alex Collins
+maintainer:     alexcollins.org
+copyright:      2020 Alex Collins
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
-    ChangeLog.md
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/simsim
+  location: https://github.com/atcol/simsim
 
 library
   exposed-modules:
@@ -46,6 +45,7 @@ test-suite simsim-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      BasicExampleSpec
       VehicleExampleSpec
       Paths_simsim
   hs-source-dirs:

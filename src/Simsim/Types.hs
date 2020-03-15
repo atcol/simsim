@@ -25,10 +25,12 @@ data Options =
     }
   deriving (Generic, Show)
 
+-- | Counters for execution
 newtype SimulationStats =
-  SimulationStats Int
+  SimulationStats { ssCount :: Int }
   deriving (Show)
 
+-- | The overall type containing real time definition of the simulation currently executing
 data Simulation =
   Simulation
     { simLogFunc        :: !LogFunc

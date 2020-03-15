@@ -31,15 +31,13 @@ maxSpeed = 30.0
 vehicleActor :: Actor IO Vehicle
 vehicleActor = do
   (g, s@(ActorSimState (Car n speed m) sim)) <- ask
-  let (rInt, g') = randomR (0.0, 1.0) g :: (Double, StdGen)
   (SimulationStats count) <- readMVar (simStats sim)
-  liftIO $ print $ "Sim stats: " ++ show count ++ ", " ++ show rInt
   case m of
-    Parked -> return (Continue, g', s {astValue = Car n 5 Moving})
+    Parked -> return (Continue, g, s {astValue = Car n 5 Moving})
     Parking ->
       if (speed - 2) <= 5
-        then return (Terminate, g', s {astValue = Car n 0 Parked})
-        else return (Continue, g', s {astValue = Car n 3 Parking})
+        then return (Terminate, g, s {astValue = Car n 0 Parked})
+        else return (Continue, g, s {astValue = Car n 3 Parking})
     Moving ->
       let startParking = count >= 10 || speed == maxSpeed
           newSpeed
@@ -50,7 +48,7 @@ vehicleActor = do
             if startParking
               then Parking
               else Moving
-       in return (Continue, g', s {astValue = Car n newSpeed mode})
+       in return (Continue, g, s {astValue = Car n newSpeed mode})
 
 spec :: Spec
 spec =
