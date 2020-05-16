@@ -29,8 +29,8 @@ library:
 
   dependencies:
     - optparse-generic
-    - gsl-random
-    - random
+    - random-fu
+    - mwc-random
 
 tests:
   simsim-test:
