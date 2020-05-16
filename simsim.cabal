@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 55d5d83ff489b8a74379640cff3999db787456c51326dead530e1e2eac393bf7
+-- hash: b0182994f7d53f95b7c2d9a01d03574675fff224d8088ce78c84aac7e31d3b45
 
 name:           simsim
 version:        0.1.0.0
@@ -36,6 +36,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.11 && <10
+    , gsl-random
     , optparse-generic
     , random
     , rio >=0.1.12.0

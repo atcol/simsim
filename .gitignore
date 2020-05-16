@@ -10,6 +10,7 @@ cabal-dev
 *.dyn_hi
 .hpc
 .hsenv
+*.lock
 .cabal-sandbox/
 cabal.sandbox.config
 *.prof
@@ -21,3 +22,8 @@ cabal.project.local
 cabal.project.local~
 .HTF/
 .ghc.environment.*
+
+# Intellij Specific
+.idea/
+out/
+*.iml

@@ -29,6 +29,7 @@ library:
 
   dependencies:
     - optparse-generic
+    - gsl-random
     - random
 
 tests:
