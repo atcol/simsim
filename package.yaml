@@ -29,6 +29,7 @@ library:
 
   dependencies:
     - optparse-generic
+    - random
     - random-fu
     - mwc-random
 

@@ -39,6 +39,7 @@ data Simulation =
     , simStats          :: !(MVar SimulationStats)
     }
 
+-- | The wrapper for each iteration state
 data ActorState a =
   ActorSimState
     { astValue :: a
