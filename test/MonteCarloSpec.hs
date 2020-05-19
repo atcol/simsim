@@ -10,7 +10,7 @@ module MonteCarloSpec
 
 import           Data.List                 (foldl)
 import           Data.Maybe                (fromJust)
-import           Prelude                   (head, print)
+import           Prelude                   (head)
 import           Simsim.Import             hiding (assert)
 import           Simsim.Methods.MonteCarlo
 import           Simsim.Run
@@ -37,7 +37,7 @@ prop_withinBounds (NonNegative a, NonNegative b) =
           firstRes = head values
           res = result firstRes
       -- Assert the interval is in [i, j)
-      assert $ isJust res
+      liftIO $ isJust res `shouldBe` True
       liftIO $ fromJust res `shouldSatisfy` (<=) a
       liftIO $ fromJust res `shouldSatisfy` (>) b
 
@@ -45,15 +45,11 @@ prop_runsTrials :: NonNegative Int -> Property
 prop_runsTrials (NonNegative numTrials) =
   monadicIO $
   case uniformMonteCarlo (0, 1) (const True) numTrials of
-    Nothing -> do
-      liftIO $ print $ "Params failed: Num trials is " ++ show numTrials
-      liftIO $ numTrials `shouldSatisfy` (>=) 0
+    Nothing -> liftIO $ numTrials `shouldSatisfy` (>=) 0
     Just params -> do
-      liftIO $ print $ "Params passed: Num trials is " ++ show numTrials
       outputs <- liftIO $ runSim [(monteCarlo, params)]
       let values = foldl (\a (_, x) -> a ++ map (result . astValue) x) [] outputs
           generated = filter (\n -> n >= 0 && n < 1) $ map fromJust values
-      liftIO $ print $ "Length is: " ++ show (length generated)
       liftIO $ length generated `shouldBe` numTrials
 
 prop_predicate :: NonNegative Int -> Property
