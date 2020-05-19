@@ -22,29 +22,30 @@ instance ParseRecord Options
 runActor :: (MonadIO m, Show a) => Actor m a -> (StdGen, ActorState a) -> m (Actor m a, StdGen, [ActorState a])
 runActor = loop []
   where
+    loop :: (MonadIO m, Show a) => [ActorState a] -> Actor m a -> (StdGen, ActorState a) -> m (Actor m a, StdGen, [ActorState a])
     loop x r v = do
       (s, g', v') <- runReaderT r v
       let st = simStats $ astSim v'
       (SimulationStats n) <- takeMVar st
       putMVar st (SimulationStats (n + 1))
-      liftIO $ print $ "New state: " ++ show v'
+--      logDebug $ "New state: " <> displayShow v'
       case s of
         Terminate -> return (r, g', x ++ [v'])
         _         -> loop (x ++ [v']) r (g', v')
 
--- | Wrap @runActor@ with statistics gathering and logging
+-- | Wrap 'runActor' with statistics gathering and logging
 run :: (Show a) => [(Actor IO a, ActorState a)] -> RIO Simulation [(Actor IO a, [ActorState a])]
 run pairs = do
   si@(Simulation _ _ opts stats) <- ask
-  logInfo $ "Starting simulation " <> displayShow si
+  logDebug $ "Starting simulation " <> displayShow si
   g <-
     case seed opts >>= readMaybe of
       Just s -> liftIO $ setStdGen s >> getStdGen
       _      -> liftIO newStdGen
-  logInfo $ "Seed is " <> displayShow g
+  logDebug $ "Seed is " <> displayShow g
   res <- liftIO $ mapConcurrently (doStep g) pairs
   simSt <- takeMVar stats
-  logInfo $ "Simulation stats: " <> displayShow simSt
+  logDebug $ "Simulation stats: " <> displayShow simSt
   return res
   where
     doStep g (act, v) = do
@@ -57,7 +58,7 @@ runSim x = do
   opts <- getRecord "Simsim :)" :: IO Options
   lo <- logOptionsHandle stderr (verbose opts)
   pc <- mkDefaultProcessContext
-  ss <- newMVar $ SimulationStats 0
+  ss <- newMVar $ SimulationStats 1
   withLogFunc lo $ \lf ->
     let sim = Simulation {simLogFunc = lf, simProcessContext = pc, simOptions = opts, simStats = ss}
      in runRIO sim (run $ map (\(a, v) -> (a, ActorSimState v sim)) x)

@@ -39,5 +39,5 @@ spec =
   it "Demonstrates a temperature sensor" $ do
     results <- runSim [(temperature, startingTemp)]
     let values = foldl (\a (_, x) -> a ++ map astValue x) [] results
-    values `shouldNotBe` []
+    length values `shouldBe` simCount
     liftIO $ print values

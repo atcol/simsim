@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5b1bfd01866dca54127dafce9a7706911ddad4eaae33177434f279980c30020c
+-- hash: 98aa1667d3184aac79443bca1a38d87f2f3ef5365bd23e0f530204704e7005fa
 
 name:           simsim
 version:        0.1.0.0
@@ -49,13 +49,15 @@ test-suite simsim-test
   main-is: Spec.hs
   other-modules:
       BasicExampleSpec
+      MonteCarloSpec
       VehicleExampleSpec
       Paths_simsim
   hs-source-dirs:
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.11 && <10
+      QuickCheck
+    , base >=4.11 && <10
     , hspec
     , random
     , rio >=0.1.12.0
