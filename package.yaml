@@ -42,6 +42,9 @@ tests:
       - hspec
       - QuickCheck
       - random
+      - random-fu
+      - mwc-random
+      - transformers
 
     ghc-options:
       - -threaded

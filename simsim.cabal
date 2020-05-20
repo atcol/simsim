@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 98aa1667d3184aac79443bca1a38d87f2f3ef5365bd23e0f530204704e7005fa
+-- hash: 45df29aaf10cf1a59eef96cc4c01e8512b6d8f59e586e0f2038ec2a2aa6858e0
 
 name:           simsim
 version:        0.1.0.0
@@ -59,7 +59,11 @@ test-suite simsim-test
       QuickCheck
     , base >=4.11 && <10
     , hspec
+    , mwc-random
+    , optparse-generic
     , random
+    , random-fu
     , rio >=0.1.12.0
     , simsim
+    , transformers
   default-language: Haskell2010

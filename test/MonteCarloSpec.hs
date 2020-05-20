@@ -8,7 +8,7 @@ module MonteCarloSpec
   ( spec
   ) where
 
-import           Data.List                 (foldl)
+import           Data.List                 (foldl, last)
 import           Data.Maybe                (fromJust)
 import           Prelude                   (head)
 import           Simsim.Import             hiding (assert)
@@ -20,12 +20,31 @@ import           Test.QuickCheck.Monadic   (assert, monadicIO)
 
 spec :: Spec
 spec =
-  describe "MonteCarlo" $
-  context "QuickCheck - Successfully runs a simulation" $ do
-    it "produces values within bounds" $ property prop_withinBounds
-    it "always runs specified # of trials" $ property prop_runsTrials
-    it "evaluates using the predicate" $ property prop_predicate
+  describe "MonteCarlo" $ do
+    context "Examples" $
+      it "Flip a coin" $ do
+        let pred = (<= 0.5)
+            mc = uniformMonteCarlo (0, 1) pred 10000
+            params@(MonteCarlo (a, b) _ _ _ _) = fromJust mc
+        r <- liftIO $ runSim [(monteCarlo, params)]
+        let values = foldl (\a' (_, x) -> a' ++ map astValue x) [] r
+            lastVal = last values
+            res = mcResult lastVal
+            allResults = map mcrValue $ catMaybes $ map mcResult values
+            (MonteCarloResult count hits miss tot mValue) = fromJust res
+            estimate = toRational hits / toRational count
+        liftIO $ count `shouldBe` 10000
+        liftIO $ hits + miss `shouldBe` count
+        liftIO $ tot `shouldBe` (sum $ filter pred allResults)
+        liftIO $ mValue `shouldSatisfy` (<=) a
+        liftIO $ mValue `shouldSatisfy` (>) b
+        estimate `shouldNotSatisfy` (< 0.49)
+    context "QuickCheck - Successfully runs a simulation" $ do
+      it "produces values within bounds" $ property prop_withinBounds
+      it "always runs specified # of trials" $ property prop_runsTrials
+      --it "evaluates using the predicate" $ property prop_predicate
 
+--        liftIO $ print $ "All value: " ++ show values
 prop_withinBounds :: (NonNegative Float, NonNegative Float) -> Property
 prop_withinBounds (NonNegative a, NonNegative b) =
   monadicIO $
@@ -35,11 +54,15 @@ prop_withinBounds (NonNegative a, NonNegative b) =
       outputs <- liftIO $ runSim [(monteCarlo, params)]
       let values = foldl (\a' (_, x) -> a' ++ map astValue x) [] outputs
           firstRes = head values
-          res = result firstRes
+          res = mcResult firstRes
+          (MonteCarloResult count hits miss tot value) = fromJust res
       -- Assert the interval is in [i, j)
-      liftIO $ isJust res `shouldBe` True
-      liftIO $ fromJust res `shouldSatisfy` (<=) a
-      liftIO $ fromJust res `shouldSatisfy` (>) b
+      liftIO $ count `shouldBe` 1
+      liftIO $ hits `shouldBe` 1
+      liftIO $ miss `shouldBe` 0
+      liftIO $ tot `shouldBe` value
+      liftIO $ value `shouldSatisfy` (<=) a
+      liftIO $ value `shouldSatisfy` (>) b
 
 prop_runsTrials :: NonNegative Int -> Property
 prop_runsTrials (NonNegative numTrials) =
@@ -48,8 +71,8 @@ prop_runsTrials (NonNegative numTrials) =
     Nothing -> liftIO $ numTrials `shouldSatisfy` (>=) 0
     Just params -> do
       outputs <- liftIO $ runSim [(monteCarlo, params)]
-      let values = foldl (\a (_, x) -> a ++ map (result . astValue) x) [] outputs
-          generated = filter (\n -> n >= 0 && n < 1) $ map fromJust values
+      let values = foldl (\a (_, x) -> a ++ map (mcResult . astValue) x) [] outputs
+          generated = filter (\n -> n >= 0 && n < 1) $ map (mcrValue . fromJust) values
       liftIO $ length generated `shouldBe` numTrials
 
 prop_predicate :: NonNegative Int -> Property
@@ -59,7 +82,7 @@ prop_predicate (NonNegative numTrials) =
     Nothing -> assert $ numTrials <= 0
     Just params -> do
       outputs <- liftIO $ runSim [(monteCarlo, params)]
-      let values = foldl (\a (_, x) -> a ++ map (result . astValue) x) [] outputs
+      let values = foldl (\a (_, x) -> a ++ map (mcResult . astValue) x) [] outputs
           found = catMaybes values
       liftIO $ length values `shouldBe` numTrials
       liftIO $ length found `shouldBe` 0
