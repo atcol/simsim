@@ -8,7 +8,7 @@ before_install:
   - export PATH=~/.local/bin:$PATH
   - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar -xzO --wildcards '*/stack' > ~/.local/bin/stack
   - chmod a+x ~/.local/bin/stack
-  - apt-get install gsl-bin libgsl0-dev
+  - sudo apt-get install gsl-bin libgsl0-dev
 
 install:
   - stack -j 2 setup --no-terminal
