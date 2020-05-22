@@ -1,9 +1,9 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RankNTypes       #-}
 
-module Simsim.Methods.MonteCarlo
-  ( MonteCarlo(..) -- ^ The monte carlo parameter type, with smart constructors e.g. 'uniformMonteCarlo'
-  , MonteCarloResult(..) -- ^ The result of a Monte Carlo simulation step
+module Simsim.Methods.MonteCarlo (
+  MonteCarlo(..)
+  , MonteCarloResult(..)
   -- | The Monte Carlo simulation actor
   , monteCarlo
   , uniformMonteCarlo
@@ -17,7 +17,7 @@ import           Data.Random.Distribution.Uniform (Uniform (..))
 import           RIO                              (ask)
 import           Simsim.Import                    (Actor, ActorState (..),
                                                    Status (..))
-
+-- | The monte carlo parameter type with smart constructors e.g. 'uniformMonteCarlo'
 data MonteCarlo a =
   MonteCarlo
     { mcTrials :: Int -- ^ The number of trials to run
@@ -25,7 +25,7 @@ data MonteCarlo a =
     }
   deriving (Eq, Show)
 
--- | The output of a step in a Monte Carlo simulation
+-- | The output of a step in a Monte Carlo simulation step
 data MonteCarloResult a =
   MonteCarloResult
     { mcrCount :: Int -- ^ The number of invocations
