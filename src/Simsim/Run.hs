@@ -6,7 +6,8 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 
 module Simsim.Run
-  ( run
+  ( getValues
+  , run
   , runSim
   ) where
 
@@ -15,6 +16,7 @@ import           Prelude         (print)
 import           RIO.Process
 import           Simsim.Import
 import           System.Random   (StdGen, getStdGen, newStdGen, setStdGen)
+import Data.List (foldl)
 
 instance ParseRecord Options
 
@@ -62,3 +64,7 @@ runSim x = do
   withLogFunc lo $ \lf ->
     let sim = Simulation {simLogFunc = lf, simProcessContext = pc, simOptions = opts, simStats = ss}
      in runRIO sim (run $ map (\(a, v) -> (a, ActorSimState v sim)) x)
+
+-- | Extract the value from the result of a simulation, e.g. 'runSim'
+getValues :: [(actor, [ActorState a])] -> [a]
+getValues = foldl (\a (_, x) -> a ++ map astValue x) []

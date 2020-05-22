@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 45df29aaf10cf1a59eef96cc4c01e8512b6d8f59e586e0f2038ec2a2aa6858e0
+-- hash: 5a7cd6ab1cbc7955617b686e39699d8485fdd99ea30e9cb76746858508033370
 
 name:           simsim
 version:        0.1.0.0
@@ -60,7 +60,6 @@ test-suite simsim-test
     , base >=4.11 && <10
     , hspec
     , mwc-random
-    , optparse-generic
     , random
     , random-fu
     , rio >=0.1.12.0
